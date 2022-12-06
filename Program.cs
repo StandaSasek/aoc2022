@@ -21,7 +21,8 @@ class Program
         //Console.WriteLine(Scissors("day02.txt"));
         //Console.WriteLine(Scissors2("day02.txt"));
         //Console.WriteLine(Rucksack("day03.txt"));
-        Console.WriteLine(Rucksack2("day03.txt"));
+        //Console.WriteLine(Rucksack2("day03.txt"));
+        Console.WriteLine(Rucksack2("day04.txt"));
 
 
     }
@@ -55,27 +56,7 @@ class Program
 
         return result;
     }
-
-    private static List<int> getLetters(string line)
-    {
-        byte[] asciiBytes = Encoding.ASCII.GetBytes(line);
-        List<int> letters = new List<int>();
-
-        foreach (var letter in asciiBytes)
-        {
-            if (letter > 96)
-            {
-                letters.Add(letter - 96);
-            }
-            else
-            {
-                letters.Add(letter - 64 + 26);
-            }
-        }
-
-        return letters;
-    }
-
+        
     public static int Rucksack(string fileName)
     {
         List<string> lines = ReadLines(fileName);
@@ -84,7 +65,7 @@ class Program
         foreach (var item in lines)
         {
             byte[] asciiBytes = Encoding.ASCII.GetBytes(item);
-            List<int> letters = new List<int>();
+            List<int> letters = getAscii(asciiBytes);
 
             foreach (var letter in asciiBytes)
             {
@@ -316,5 +297,32 @@ class Program
     {
         string path = Path.Combine(Environment.CurrentDirectory, @"sources\", fileName);
         return File.ReadAllLines(path).ToList();
+    }
+
+    private static List<int> getLetters(string line)
+    {
+        byte[] asciiBytes = Encoding.ASCII.GetBytes(line);
+        List<int> letters = getAscii(asciiBytes);
+
+        return letters;
+    }
+
+    private static List<int> getAscii(byte[] asciiBytes)
+    {
+        List<int> letters = new List<int>();
+
+        foreach (var letter in asciiBytes)
+        {
+            if (letter > 96)
+            {
+                letters.Add(letter - 96);
+            }
+            else
+            {
+                letters.Add(letter - 64 + 26);
+            }
+        }
+
+        return letters;
     }
 }
