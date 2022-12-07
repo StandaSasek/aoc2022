@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 using File = System.IO.File;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Drawing;
 
 namespace MyProject;
 class Program
@@ -23,9 +27,158 @@ class Program
         //Console.WriteLine(Rucksack("day03.txt"));
         //Console.WriteLine(Rucksack2("day03.txt"));
         //Console.WriteLine(Cleaning("day04.txt"));
-        Console.WriteLine(Cleaning2("day04.txt"));
+        //Console.WriteLine(Cleaning2("day04.txt"));
+        //Console.WriteLine(Crates("day05crates.txt", "day05moves.txt"));
+        Console.WriteLine(Crates2("day05crates.txt", "day05moves.txt"));
 
 
+    }
+
+    public static string Crates2(string cratesPiles, string movesFile)
+    {
+        List<string> lines = ReadLines(cratesPiles);
+        List<List<char>> crates = CratesToPiles(lines);
+        List<string> movesLines = ReadLines(movesFile);
+        List<int> moves = new List<int>();
+
+        foreach (var line in movesLines)
+        {
+            List<string> zones = line.Split(' ').ToList();
+
+            for (int i = 1; i < zones.Count; i += 2)
+            {
+                if (Int16.TryParse(zones[i], out short number))
+                {
+                    moves.Add(number);
+                }
+            }
+        }
+
+        for (int i = 0; i < moves.Count; i++)
+        {
+            int cratesToMove = moves[i];
+            int from = moves[++i] - 1;
+            int to = moves[++i] - 1;
+            
+            if (crates[from].Any())
+            {
+                var indexFrom = crates[from].Count - cratesToMove;
+                crates[to].AddRange(crates[from].GetRange(indexFrom, crates[from].Count - indexFrom));
+                crates[from].RemoveRange(indexFrom, cratesToMove);
+            }
+        }
+
+        var topCrates = "";
+
+        foreach (var column in crates)
+        {
+            topCrates += column[column.Count - 1];
+        }
+
+        return topCrates;
+    }
+
+    public static string Crates(string cratesPiles, string movesFile)
+    {
+        List<string> lines = ReadLines(cratesPiles);
+        List<List<char>> crates = CratesToPiles(lines);
+        List<string> movesLines = ReadLines(movesFile);
+        List<int> moves = new List<int>();
+
+        foreach (var line in movesLines)
+        {
+            List<string> zones = line.Split(' ').ToList();
+
+            for (int i = 1; i < zones.Count; i += 2)
+            {
+                if (Int16.TryParse(zones[i], out short number))
+                {
+                    moves.Add(number);
+                }
+            }
+        }
+
+        for (int i = 0; i < moves.Count; i++)
+        {
+            int cratesToMove = moves[i];
+            int from = moves[++i] - 1;
+            int to = moves[++i] - 1;
+
+            for (int j = 0; j < cratesToMove; j++)
+            {
+                int topCrateIndex = crates[from].Count - 1;
+
+                if (crates[from].Any())
+                {
+                    char crate = crates[from][topCrateIndex];
+                    crates[from].RemoveAt(topCrateIndex);
+                    crates[to].Add(crate);
+                }
+            }
+        }
+
+        var topCrates = "";
+
+        foreach (var column in crates)
+        {
+            topCrates += column[column.Count - 1];
+        }
+
+        return topCrates;
+    }
+
+    private static List<List<char>> CratesToPiles(List<string> lines)
+    {
+        List<List<char>> crates = new List<List<char>>();
+        int columns = ((lines[0].Length - 3) / 4) + 1;
+
+        for (int i = 0; i < columns; i++)
+        {
+            crates.Add(new List<char>());
+        }
+
+        for (int i = 0; i < lines.Count - 1; i++)
+        {
+            int counter = 0;
+            int columnIndex = 0;
+
+            for (int j = 0; j < lines[i].Length; j++)
+            {
+                if (lines[i][j] == ' ')
+                {
+                    counter++;
+                }
+                else if (counter == 1)
+                {
+                    columnIndex++;
+                    counter = 0;
+                    crates[columnIndex].Add(lines[i][j + 1]);
+                    j = j + 2;
+                    continue;
+                }
+                else if (counter % 4 == 0)
+                {
+                    columnIndex += counter / 4;
+                    counter = 0;
+                    crates[columnIndex].Add(lines[i][j + 1]);
+                    j = j + 2;
+                }
+                else if ((counter % 4) == 1)
+                {
+                    columnIndex += ((counter - 1) / 4) + 1;
+                    counter = 0;
+                    crates[columnIndex].Add(lines[i][j + 1]);
+                    j = j + 2;
+                }
+            }
+        }
+
+        foreach (var column in crates)
+        {
+            column.Reverse();
+        }
+
+        return crates;
     }
 
     public static int Cleaning2(string fileName)
