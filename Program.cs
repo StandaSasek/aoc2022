@@ -22,9 +22,68 @@ class Program
         //Console.WriteLine(Scissors2("day02.txt"));
         //Console.WriteLine(Rucksack("day03.txt"));
         //Console.WriteLine(Rucksack2("day03.txt"));
-        Console.WriteLine(Rucksack2("day04.txt"));
+        //Console.WriteLine(Cleaning("day04.txt"));
+        Console.WriteLine(Cleaning2("day04.txt"));
 
 
+    }
+
+    public static int Cleaning2(string fileName)
+    {
+        List<string> lines = ReadLines(fileName);
+        int result = 0;
+
+        foreach (var line in lines)
+        {
+            List<string> zones = line.Split(',').ToList();
+
+            List<string> numbers1 = zones[0].Split('-').ToList();
+            int oneFrom = Int16.Parse(numbers1[0]);
+            int oneTo = Int16.Parse(numbers1[1]);
+
+            List<string> numbers2 = zones[1].Split('-').ToList();
+            int twoFrom = Int16.Parse(numbers2[0]);
+            int twoTo = Int16.Parse(numbers2[1]);
+
+            if (oneFrom <= twoFrom
+                && twoFrom <= oneTo 
+                || twoFrom <= oneFrom
+                && twoTo >= oneTo)
+            {
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    public static int Cleaning(string fileName)
+    {
+        List<string> lines = ReadLines(fileName);
+        int result = 0;
+
+        foreach (var line in lines)
+        {
+            List<string> zones = line.Split(',').ToList();
+
+            List<string> numbers1 = zones[0].Split('-').ToList();
+            int oneFrom = Int16.Parse(numbers1[0]);
+            int oneTo = Int16.Parse(numbers1[1]);
+
+            List<string> numbers2 = zones[1].Split('-').ToList();
+            int twoFrom = Int16.Parse(numbers2[0]);
+            int twoTo = Int16.Parse(numbers2[1]);
+
+            if (oneFrom <= twoFrom 
+                && oneTo >= twoTo
+                || twoFrom <= oneFrom
+                && twoTo >= oneTo)
+            {
+                result++;
+            }
+        }
+
+        return result;
     }
 
     public static int Rucksack2(string fileName)
